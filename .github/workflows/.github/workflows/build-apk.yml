@@ -1,0 +1,35 @@
+name: Build Flora Marketing APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Extract project
+        run: unzip -q FloraMarketing-Android-Project-Blue-Icon.zip -d project
+
+      - name: Build APK
+        run: gradle -p project/flora-android-project assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: FloraMarketing-APK
+          path: project/flora-android-project/app/build/outputs/apk/debug/app-debug.apk
